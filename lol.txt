@@ -71,5 +71,5 @@ Modem/gateway (fiber)
         - The lockdown function on the pi permanently sets the pi into a mode where it will change all relays to the disengaged state, disabling all network connections for all devices. It will respond to any changes with a message claiming that it is in lockdown. It also physically disconnects the fiber connection to the router.
         - The physical relay controls are within the server room, and are buttons that toggle the state of the relay.
     - Is accessible via WAN, and can disable LAN access to all routers. The worst that can happen is all systems offline if machine is compromised
-    - Sends all new connections, actions, and threat detections are immediately to forwarded to a logging server, SMS, discord, email, call, and maybe a PA in house speaker system
+    - All new connections, actions, and threat detections are immediately to forwarded to a logging server, SMS, discord, email, call, and maybe a PA in house speaker system
     - If for any reason a device disconnects the fiber line, continuously make an announcement via physical audio connections to the controller. Able to be silenced via the master shutoff button
