@@ -1,9 +1,9 @@
 Modem/gateway (fiber)
-	Switch
+	Physical firewall device (Ask Avid)
 		Guest router (wireless)
-			Guest devices (Phones, iPads, laptops, etc.)
-		Physical firewall device (Ask Avid)
-			Network analyzer (for active threat detection and defensive countermeasures)
+                        Guest devices (Phones, iPads, laptops, etc.)
+                Switch
+                        Network analyzer (for active threat detection and defensive countermeasures)
 			Private network (router, wireless)
 				Personal devices (Phones, iPads, other secure)
 			Cautious network (router, wireless)
