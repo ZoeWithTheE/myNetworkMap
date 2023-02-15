@@ -1,0 +1,75 @@
+Modem/gateway (fiber)
+	Switch
+		Guest router (wireless)
+			Guest devices (Phones, iPads, laptops, etc.)
+		Physical firewall device (Ask Avid)
+			Network analyzer (for active threat detection and defensive countermeasures)
+			Private network (router, wireless)
+				Personal devices (Phones, iPads, other secure)
+			Cautious network (router, wireless)
+				IoT devices (smart lights/plugs/smart home hub)
+				TVs
+				Other insecure devices
+			Isolated unsecured (router with VPN or proxy chain, wired. NO SENSITIVE DATA)
+				Physical machines for ethical hacking and other activities that I want to keep my data isolated from
+			Isolated secure (for speed, router, wired)
+				PC
+			Personal servers (very secure, redundant, accessible during outage, router, wired, only accessible via LAN, use custom VPN to connect from abroad)
+				PLEX
+				NAS
+				Private repositories
+			Public servers (As secure as possible, router, wired, one port)
+				Physical port splitter via subdomain? (See network chuck video)
+					Minecraft
+					Websites
+					Discord bots
+					Public repositories
+
+
+1. All tech in one room, except for routers/access points and personal devices
+2. Master shutoff script for physically disconnecting the fiber line connected to modem
+    - Script is an SSH command
+    - Runnable via any device
+    - No digital documentation on usage, unless the documentation is misleading (maybe it “activates a fan”)
+    - SSH command destination is the network analyzer
+    - The SSH command executes a command on the device that sets a USB data pin to HIGH, which physically disconnects the modem’s fiber connection
+3. Master shutoff buttons for physically disconnecting the fiber line connected to modem
+    - Locations:
+        - Server room
+        - Room with PC
+        - Room with isolated and secured devices
+    - These are physical buttons, only able to be access with either a fingerprint or pin
+4. Gigabit ethernet in all rooms. (All going to cautious network router)
+5. Highest speed Ethernet available in room with PC
+6. NAS is completely redundant - loose up to 2 drives before data loss
+    - Also have secure backup in cloud
+7. Server room is on one big UPS (Uninterruptible power supply)
+    - Maybe invest in one of those full house power supplies?
+    - ALL devices in server room are connected to the UPS
+    - Maybe UPS redundancy?
+    - All UPS units stored in separate room
+8. Server room and UPS room both have industrial-grade electronic-safe human-safe fire suppression units.
+    - Automatically triggered (temp, smoke)
+    - Manually triggered by phone, physical terminal
+9. Strong cellular receiver in case of internet outage. Intelligently enable/disable demanding servers based on bandwidth
+10. There is a single laptop in the server room that is physically connected to every device via Ethernet. These connections are not present unless there is someone currently at the laptop. The user must flip physical switches to enable each individual connection. If there is no movement in the room (surveillance cameras) for over 50 seconds, sound an alarm. After 60, if there has been no movement since the alarm started, disconnect all Ethernet connections leading to the laptop. The alarm is stopped after 60 seconds, OR after movement is detected. The no movement timer is restarted on every movement event detected by the camera(s)
+11. Server room is protected via fingerprint, passphrase, retina, face, or voice fingerprint
+12. For network analyzer:
+    - Detect DDoS, suspicious connections, and other threats. Monitors all incoming/outgoing connections for suspicious SSH connections, software updates (if possible), malware (if possible), and other things of the sort
+    - Depending on threat severity and suspected target, use physical, offline relays to cut access. Once triggered, the relay will not re-engage until a physical button on the relay controller is pressed. Uses the onboard USBs as GPIO (general pin input/output).
+    - Relays are not directly controlled by the device, rather a raspberry pi, or other small and isolated device.
+    - The pi is not connected to the network in any way, and has no broadcasting/receiving ability other than serial communications with the network analyzer. No Ethernet, no WiFi, no Bluetooth. This way, the pi cannot be remotely accessed in any way. The pins connected to GPIO cannot reprogram it, or give it additional instructions.
+        - If the threat has read/write/execute permissions, this will be of use:
+            - There is constant communication between the device and pi. It is impossible to reprogram the pi unless you are directly plugged into it. It does not have access to the internet. The two devices have protocols that ensure that if the script is changed, the pi will detect it. If a changed script is detected, the pi will enter lockdown mode, and ignore any and all data from the device, and send an alert to another device that will send a variety of alerts (see below points). The communication session as described below must take place in less time than the ping between modem and ISP, multiplied by 2. This is to ensure someone with ill intent won’t be able to send the pi valid instructions (there will be a new key before their commands would reach the device). The encryption keys are randomly generated via a truly random, radioactive element decay-based PCIe card. It all goes like this:
+                - pi sends a random key for the device to use to generate a hash from the script it runs. Yes, the key can be seen by a hacker, but only after it has already changed.
+                - Device hashes the script and sends the result to the pi
+                - pi validates hash, and if its valid, sends a new random key, and a request for an action (encrypted by new key), if the controller is allowing actions.
+                - Device decrypts the message with the new key, and sends the appropriate data: (No action, disengage <relay>, lowdown mode), also encrypted by the new key
+                - If the pi is able to decrypt the action sent with the new key, it preforms the action.
+                - Repeat
+            - If the pi receives a response from the device that doesn’t check out with the current information, if still within the ping time limit, it will tell the device to try again with more current information.
+        - The lockdown function on the pi permanently sets the pi into a mode where it will change all relays to the disengaged state, disabling all network connections for all devices. It will respond to any changes with a message claiming that it is in lockdown. It also physically disconnects the fiber connection to the router.
+        - The physical relay controls are within the server room, and are buttons that toggle the state of the relay.
+    - Is accessible via WAN, and can disable LAN access to all routers. The worst that can happen is all systems offline if machine is compromised
+    - Sends all new connections, actions, and threat detections are immediately to forwarded to a logging server, SMS, discord, email, call, and maybe a PA in house speaker system
+    - If for any reason a device disconnects the fiber line, continuously make an announcement via physical audio connections to the controller. Able to be silenced via the master shutoff button
